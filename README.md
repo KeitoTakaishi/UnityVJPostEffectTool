@@ -11,7 +11,7 @@
 
 ## Description
 This is PostEffect package(HLSL).
-### Containts 
+### Containts
 - InvertColor
 - Zoom
 - RGBShift
@@ -19,6 +19,7 @@ This is PostEffect package(HLSL).
 - GridFlash
 - VerticalSymmetry
 - HorizontalSymmetry
+- Mosaic
 
 ## Usage
 

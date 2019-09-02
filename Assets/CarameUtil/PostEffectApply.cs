@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(InvertColor))]
 [RequireComponent(typeof(GridFlash))]
 [RequireComponent(typeof(Glitch))]
 [RequireComponent(typeof(HorizontalSymmetry))]
 [RequireComponent(typeof(VerticalSymmetry))]
 [RequireComponent(typeof(RGBShift))]
 [RequireComponent(typeof(Zoom))]
+[RequireComponent(typeof(Mosaic))]
 
 public class PostEffectApply : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class PostEffectApply : MonoBehaviour
     Material _gridFlashMaterial;
     Material _horizontalSymmetryMaterial;
     Material _verticalSymmetryMaterial;
+    Material _mosaicMaterial;
     #endregion
 
 
@@ -59,13 +61,14 @@ public class PostEffectApply : MonoBehaviour
 
     void init()
     {
-        _invertColorMaterial = new Material(Resources.Load<Material>("PostEffects/Materials/InvertColorMat"));
+        _invertColorMaterial = GetComponent<InvertColor>().material;
         _zoomMaterial = GetComponent<Zoom>().material;
         _rgbShiftMaterial = GetComponent<RGBShift>().material;
         _glitchMaterial = GetComponent<Glitch>().material;
         _gridFlashMaterial = GetComponent<GridFlash>().material;
         _horizontalSymmetryMaterial = GetComponent<HorizontalSymmetry>().material;
         _verticalSymmetryMaterial = GetComponent<VerticalSymmetry>().material;
+        _mosaicMaterial = GetComponent<Mosaic>().material;
 
 
         _materials = new List<Material>();
@@ -76,10 +79,11 @@ public class PostEffectApply : MonoBehaviour
         _materials.Add(_gridFlashMaterial);
         _materials.Add(_horizontalSymmetryMaterial);
         _materials.Add(_verticalSymmetryMaterial);
+        _materials.Add(_mosaicMaterial);
 
         if(curMat == null)
         {
-            curMat = _gridFlashMaterial;
+            curMat = _mosaicMaterial;
         }
     }
 }
