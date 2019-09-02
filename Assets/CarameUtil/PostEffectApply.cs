@@ -10,6 +10,7 @@ using UnityEngine;
 [RequireComponent(typeof(RGBShift))]
 [RequireComponent(typeof(Zoom))]
 [RequireComponent(typeof(Mosaic))]
+[RequireComponent(typeof(Tile))]
 
 public class PostEffectApply : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class PostEffectApply : MonoBehaviour
     Material _horizontalSymmetryMaterial;
     Material _verticalSymmetryMaterial;
     Material _mosaicMaterial;
+    Material _tileMaterial;
     #endregion
 
 
@@ -69,6 +71,7 @@ public class PostEffectApply : MonoBehaviour
         _horizontalSymmetryMaterial = GetComponent<HorizontalSymmetry>().material;
         _verticalSymmetryMaterial = GetComponent<VerticalSymmetry>().material;
         _mosaicMaterial = GetComponent<Mosaic>().material;
+        _tileMaterial = GetComponent<Tile>().material;
 
 
         _materials = new List<Material>();
@@ -80,10 +83,11 @@ public class PostEffectApply : MonoBehaviour
         _materials.Add(_horizontalSymmetryMaterial);
         _materials.Add(_verticalSymmetryMaterial);
         _materials.Add(_mosaicMaterial);
+        _materials.Add(_tileMaterial);
 
         if(curMat == null)
         {
-            curMat = _mosaicMaterial;
+            curMat = _tileMaterial;
         }
     }
 }

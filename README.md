@@ -20,7 +20,7 @@ This is PostEffect package(HLSL).
 - VerticalSymmetry
 - HorizontalSymmetry
 - Mosaic
-
+- Tile
 ## Usage
 
 1. PostEffectApply.cs attach MainCamera
