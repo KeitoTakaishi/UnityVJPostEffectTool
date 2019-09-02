@@ -1,4 +1,4 @@
-﻿Shader "Hidden/HoriSymmetry"
+﻿Shader "Hidden/HorizontalSymmetry"
 {
     Properties
     {

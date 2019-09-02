@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: InvertColorMat
-  m_Shader: {fileID: 4800000, guid: 7a35902b7ba290e42adacafa30d43759, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3a8d944d6f5570a488871d1156c85487, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
