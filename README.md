@@ -22,6 +22,5 @@ This is PostEffect package(HLSL).
 
 ## Usage
 
-1. PostEffectApply.cs attach Camera
-2. SetMaterials(CurMat is Initial Effect)
-
+1. PostEffectApply.cs attach MainCamera
+2. Make IsEffectSwitch(PostEffectApply's property) true to change effect automatically
