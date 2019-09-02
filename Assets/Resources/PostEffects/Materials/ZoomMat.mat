@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Glitch
-  m_Shader: {fileID: 4800000, guid: 9685d6453ef5c5b459f8173bb88954df, type: 3}
+  m_Name: ZoomMat
+  m_Shader: {fileID: 4800000, guid: 039ff1afd80a5ca4b989a135f1f91f65, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -64,6 +64,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Height: 553
+    - _LoopNum: 30
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -71,6 +72,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Strength: 11.26
     - _UVSec: 0
     - _Width: 955
     - _ZWrite: 1

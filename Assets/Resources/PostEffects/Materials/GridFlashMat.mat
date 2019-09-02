@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HorizontalSymmetryMat
-  m_Shader: {fileID: 4800000, guid: b6dfb8ac1495c2b46929b7e57921cddb, type: 3}
+  m_Name: GridFlashMat
+  m_Shader: {fileID: 4800000, guid: 7f17128bd382c274bb22280a33e1281f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

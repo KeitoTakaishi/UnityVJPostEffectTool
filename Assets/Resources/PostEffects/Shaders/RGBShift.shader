@@ -44,15 +44,25 @@
 
 			float _offSet1;
 			float _offSet2;
+			int _mode;
 
             fixed4 frag (v2f i) : SV_Target
             {
 				float2 uv = i.uv;
                 fixed4 col = tex2D(_MainTex, uv);
 				
-				col.r = tex2D(_MainTex, uv + float2(_offSet1, 0.0)).r;
-				
-				col.b = tex2D(_MainTex, uv + float2(_offSet2, 0.0)).b;
+				if (_mode == 0) {
+					col.r = tex2D(_MainTex, uv + float2(_offSet1, 0.0)).r;
+					col.g = tex2D(_MainTex, uv + float2(_offSet2, 0.0)).g;
+				}
+				else if (_mode == 1) {
+					col.r = tex2D(_MainTex, uv + float2(_offSet1, 0.0)).r;
+					col.b = tex2D(_MainTex, uv + float2(_offSet2, 0.0)).b;
+				}
+				else {
+					col.b = tex2D(_MainTex, uv + float2(_offSet1, 0.0)).b;
+					col.g = tex2D(_MainTex, uv + float2(_offSet2, 0.0)).g;
+				}
 				return col;
             }
             ENDCG

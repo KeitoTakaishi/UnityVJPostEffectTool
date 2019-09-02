@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RGBShiftMat
-  m_Shader: {fileID: 4800000, guid: e4406e5e013f30249b8669ee79200029, type: 3}
+  m_Name: HorizontalSymmetryMat
+  m_Shader: {fileID: 4800000, guid: 82efc369ab0ceae4581d81a3d8d81dc1, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -72,8 +72,6 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _offSet1: 0
-    - _offSet2: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

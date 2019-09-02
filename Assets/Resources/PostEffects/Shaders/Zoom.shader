@@ -1,10 +1,8 @@
-﻿Shader "Hidden/Glitch"
+﻿Shader "Hidden/Zoom"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-		_Width("Width", Float) = 0.0
-		_Height("Height", Float) = 0.0
     }
     SubShader
     {
@@ -18,7 +16,10 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-			#include "SimplexNoise3D.cginc"
+
+			float rnd(float2 scale, float seed, float2 uv) {
+				return frac(sin(dot(uv.xy + seed, scale)) * 43758.5453 + seed);
+			}
 
             struct appdata
             {
@@ -43,27 +44,35 @@
             sampler2D _MainTex;
 			float _Width;
 			float _Height;
-			float2 blockSize;
+			int _LoopNum;
+			float _Strength;
 
+
+			//const float2 centeroffset = float2(256, 256);
             fixed4 frag (v2f i) : SV_Target
             {
-				float2 uv = i.uv;
-				blockSize = float2(1.0, _Height);
-				uv = floor(uv * blockSize) / blockSize;
-				float noise = simplexNoise(float3(uv.x, uv.y, _Time.y));
-				float4 col = tex2D(_MainTex, i.uv);
 
-				float threshould = 0.45;
-				float2 offset = (0.1, -0.2);
-
-				if (noise > threshould) {
-					float theta = simplexNoise(float3(uv.x, uv.y*70.0, _Time.w));
-					col = tex2D(_MainTex, i.uv + float2(0.5*sin(theta), 1.0 / _Height));
-					//col.rgb = (float3(1.0, 1.0, 1.0) - col.rgb)*4.0;
-					//col.g = 1.0 - col.g;
-				}
-			
-                return col;
+				float4 col = float4(0.0, 0.0, 0.0, 1.0);
+				float2 tFrag = float2(1.0, 1.0) / float2(1.0, 1.0);
+				float3 destColor = float4(0.0, 0.0, 0.0, 0.0);
+				float random = rnd(float2(12.9898, 78.233), 0.0, i.uv);
+		
+				float2 center = float2(0.5, 0.5);
+				float2 fc = i.uv;
+				float2 fcc = fc - center;
+				float totalWeight = 0.0;
+				
+				for (float i = 0.0; i <= _LoopNum; i++) {
+					float percent = (i + random) / _LoopNum;
+					float weight = percent - percent * percent;
+					float2  t = fc - fcc * percent * _Strength / _LoopNum;
+					destColor += tex2D(_MainTex, t * tFrag).rgb * weight;
+					totalWeight += weight;
+					
+				}       
+				col.rgb = destColor / totalWeight;
+				
+				return col;
             }
             ENDCG
         }
