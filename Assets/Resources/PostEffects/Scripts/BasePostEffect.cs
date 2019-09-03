@@ -46,6 +46,10 @@ namespace PostEffect
         private Shader _shader;
         #endregion
 
- 
+
+        public virtual void Update()
+        {
+            
+        }
     }
 }

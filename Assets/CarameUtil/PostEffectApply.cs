@@ -11,6 +11,8 @@ using UnityEngine;
 [RequireComponent(typeof(Zoom))]
 [RequireComponent(typeof(Mosaic))]
 [RequireComponent(typeof(Tile))]
+[RequireComponent(typeof(Feedback))]
+[RequireComponent(typeof(SobelEdge))]
 
 public class PostEffectApply : MonoBehaviour
 {
@@ -31,6 +33,9 @@ public class PostEffectApply : MonoBehaviour
     Material _verticalSymmetryMaterial;
     Material _mosaicMaterial;
     Material _tileMaterial;
+    Material _feedbackMaterial;
+    Material _edgeMaterial; 
+
     #endregion
 
 
@@ -72,6 +77,8 @@ public class PostEffectApply : MonoBehaviour
         _verticalSymmetryMaterial = GetComponent<VerticalSymmetry>().material;
         _mosaicMaterial = GetComponent<Mosaic>().material;
         _tileMaterial = GetComponent<Tile>().material;
+        _feedbackMaterial = GetComponent<Feedback>().material;
+        _edgeMaterial = GetComponent<SobelEdge>().material;
 
 
         _materials = new List<Material>();
@@ -84,10 +91,12 @@ public class PostEffectApply : MonoBehaviour
         _materials.Add(_verticalSymmetryMaterial);
         _materials.Add(_mosaicMaterial);
         _materials.Add(_tileMaterial);
+        _materials.Add(_feedbackMaterial);
+        _materials.Add(_edgeMaterial);
 
         if(curMat == null)
         {
-            curMat = _tileMaterial;
+            curMat = _edgeMaterial;
         }
     }
 }

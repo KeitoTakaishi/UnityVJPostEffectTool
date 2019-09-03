@@ -21,6 +21,8 @@ This is PostEffect package(HLSL).
 - HorizontalSymmetry
 - Mosaic
 - Tile
+- FeedBack
+- SobelEdge
 ## Usage
 
 1. PostEffectApply.cs attach MainCamera
