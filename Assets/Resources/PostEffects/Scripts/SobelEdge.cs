@@ -22,7 +22,10 @@ public class SobelEdge : BasePostEffect
 
     void Update()
     {
-        material.SetFloat(_pIdWidth, Screen.width);
-        material.SetFloat(_pIdHeight, Screen.height);
+        if (this.IsActive)
+        {
+            material.SetFloat(_pIdWidth, Screen.width);
+            material.SetFloat(_pIdHeight, Screen.height);
+        }
     }
 }

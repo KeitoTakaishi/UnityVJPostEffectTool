@@ -26,6 +26,9 @@ public class Tile : BasePostEffect
 
     void Update()
     {
-        material.SetInt(_pIdTileNum, _tileNum);
+        if (this.IsActive)
+        {
+            material.SetInt(_pIdTileNum, _tileNum);
+        }
     }
 }

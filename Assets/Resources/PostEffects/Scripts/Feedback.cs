@@ -31,8 +31,6 @@ public class Feedback : BasePostEffect
         _pIdFrequcence = Shader.PropertyToID("_frequence");
         _pIdAmp = Shader.PropertyToID("_amp"); 
 
-
-
         _renderTextures = new List<RenderTexture>();
        for(int i = 0; i < 5; i++)
         {
@@ -49,36 +47,39 @@ public class Feedback : BasePostEffect
 
     public override void Update()
     {
-        Debug.Log(Time.frameCount);
-        if (Time.frameCount % 5 == 0)
+        if (this.IsActive)
         {
-            cam.GetComponent<Camera>().targetTexture = _renderTextures[0];
-            material.SetTexture(_pIdRenderTexture[0], _renderTextures[0]);
-        }
-        else if (Time.frameCount % 5 == 1){
-            cam.GetComponent<Camera>().targetTexture = _renderTextures[1];
-            material.SetTexture(_pIdRenderTexture[1], _renderTextures[1]);
-        }
-        else if (Time.frameCount % 5 == 2)
-        {
-            cam.GetComponent<Camera>().targetTexture = _renderTextures[2];
-            material.SetTexture(_pIdRenderTexture[2], _renderTextures[2]);
-        }
-        else if (Time.frameCount % 5 == 3)
-        {
-            cam.GetComponent<Camera>().targetTexture = _renderTextures[3];
-            material.SetTexture(_pIdRenderTexture[3], _renderTextures[3]);
-        }
-        else if (Time.frameCount % 5 == 4)
-        {
-            cam.GetComponent<Camera>().targetTexture = _renderTextures[4];
-            material.SetTexture(_pIdRenderTexture[4], _renderTextures[4]);
-        }
-        
+            if (Time.frameCount % 5 == 0)
+            {
+                cam.GetComponent<Camera>().targetTexture = _renderTextures[0];
+                material.SetTexture(_pIdRenderTexture[0], _renderTextures[0]);
+            }
+            else if (Time.frameCount % 5 == 1)
+            {
+                cam.GetComponent<Camera>().targetTexture = _renderTextures[1];
+                material.SetTexture(_pIdRenderTexture[1], _renderTextures[1]);
+            }
+            else if (Time.frameCount % 5 == 2)
+            {
+                cam.GetComponent<Camera>().targetTexture = _renderTextures[2];
+                material.SetTexture(_pIdRenderTexture[2], _renderTextures[2]);
+            }
+            else if (Time.frameCount % 5 == 3)
+            {
+                cam.GetComponent<Camera>().targetTexture = _renderTextures[3];
+                material.SetTexture(_pIdRenderTexture[3], _renderTextures[3]);
+            }
+            else if (Time.frameCount % 5 == 4)
+            {
+                cam.GetComponent<Camera>().targetTexture = _renderTextures[4];
+                material.SetTexture(_pIdRenderTexture[4], _renderTextures[4]);
+            }
 
 
-        material.SetFloat(_pIdFineness, _fineness);
-        material.SetFloat(_pIdFrequcence, _frequcence);
-        material.SetFloat(_pIdAmp, _amp);
+
+            material.SetFloat(_pIdFineness, _fineness);
+            material.SetFloat(_pIdFrequcence, _frequcence);
+            material.SetFloat(_pIdAmp, _amp);
+        }
     }
 }

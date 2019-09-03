@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using PostEffect;
 
-public class InvertColor : BasePostEffect
+public class Through : BasePostEffect
 {
-    const string SHADER_NAME = "Hidden/InvertColor";
+
+    const string SHADER_NAME = "Hidden/Through";
 
 
     private void Awake()
     {
         shaderName = SHADER_NAME;
     }
-
-    private void Update()
+    void Start()
     {
+        
+    }
+
+    void Update()
+    {
+        
     }
 }

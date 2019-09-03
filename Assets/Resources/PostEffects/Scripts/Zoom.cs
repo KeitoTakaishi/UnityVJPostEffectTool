@@ -25,7 +25,7 @@ public class Zoom : BasePostEffect
         _pIdHeight = Shader.PropertyToID("_LoopNum");
 
         _loopNum = 30;
-        _strength = 3.0f;
+        _strength = 70.0f;
     }
 
 
@@ -36,9 +36,13 @@ public class Zoom : BasePostEffect
 
     void Update()
     {
-        material.SetFloat(_pIdLoopNum, (float)_loopNum);
-        material.SetFloat(_pIdStrength, _strength);
-        material.SetFloat(_pIdWidth, Screen.width);
-        material.SetFloat(_pIdHeight, Screen.height);
+        if (this.IsActive)
+        {
+            //Debug.Log("Zoom");
+            material.SetFloat(_pIdLoopNum, (float)_loopNum);
+            material.SetFloat(_pIdStrength, _strength);
+            material.SetFloat(_pIdWidth, Screen.width);
+            material.SetFloat(_pIdHeight, Screen.height);
+        }
     }
 }

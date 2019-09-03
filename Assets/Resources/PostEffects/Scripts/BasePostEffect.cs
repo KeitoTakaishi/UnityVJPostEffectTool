@@ -37,6 +37,12 @@ namespace PostEffect
             }
             set { _material = value; }
         }
+       
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set { _isActive = value; }
+        } 
         #endregion
 
 
@@ -44,12 +50,13 @@ namespace PostEffect
         [SerializeField] private Material _material;
         private string _shaderName;
         private Shader _shader;
+        bool _isActive = true;
         #endregion
 
 
         public virtual void Update()
         {
-            
+
         }
     }
 }

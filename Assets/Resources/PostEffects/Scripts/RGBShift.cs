@@ -34,8 +34,11 @@ public class RGBShift : BasePostEffect
 
     void Update()
     {
-        material.SetFloat(_pIdOffset1, offSet1);
-        material.SetFloat(_pIdOffset2, offSet2);
-        material.SetInt(_pIdMode, _mode);
+        if (this.IsActive)
+        {
+            material.SetFloat(_pIdOffset1, offSet1);
+            material.SetFloat(_pIdOffset2, offSet2);
+            material.SetInt(_pIdMode, _mode);
+        }
     }
 }

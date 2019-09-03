@@ -27,8 +27,11 @@ public class Mosaic : BasePostEffect
     
     void Update()
     {
-        material.SetFloat(_pIdBlockSize, _blockSize);
-        material.SetFloat(_pIdHeight, Screen.height);
-        material.SetFloat(_pIdWidth, Screen.width);
+        if (this.IsActive)
+        {
+            material.SetFloat(_pIdBlockSize, _blockSize);
+            material.SetFloat(_pIdHeight, Screen.height);
+            material.SetFloat(_pIdWidth, Screen.width);
+        }
     }
 }
