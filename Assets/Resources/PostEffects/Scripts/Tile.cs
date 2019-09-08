@@ -17,7 +17,7 @@ public class Tile : BasePostEffect
     {
         shaderName = SHADER_NAME;
         _pIdTileNum = Shader.PropertyToID("_tileNum");
-        _tileNum = 3;
+        //_tileNum = 3;
     }
     void Start()
     {
@@ -28,7 +28,7 @@ public class Tile : BasePostEffect
     {
         if (this.IsActive)
         {
-            material.SetInt(_pIdTileNum, _tileNum);
+            //material.SetInt(_pIdTileNum, _tileNum);
         }
     }
 }

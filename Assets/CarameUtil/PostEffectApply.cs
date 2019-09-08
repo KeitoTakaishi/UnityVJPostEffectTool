@@ -2,75 +2,105 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PostEffect;
+using System.Linq;
+
+public enum SwitchModes
+{
+    HumanMode,
+    AutoMode,
+    MomentaryHumanMode
+
+};
+
+public enum PosteffecTypes
+{
+    TROUGH,
+    INVERTCOLOR,
+    ZOOM,
+    RGBSHIFT,
+    GLITCH,
+    GRIDFLASH,
+    VERTICALSYMMETRY,
+    HORIZONTALSYMMETRY,
+    MOSAIC,
+    TILE,
+    FEEDBACK,
+    EDGE,
+}
 
 [RequireComponent(typeof(InvertColor))]
-[RequireComponent(typeof(GridFlash))]
-[RequireComponent(typeof(Glitch))]
-[RequireComponent(typeof(HorizontalSymmetry))]
-[RequireComponent(typeof(VerticalSymmetry))]
-[RequireComponent(typeof(RGBShift))]
 [RequireComponent(typeof(Zoom))]
+[RequireComponent(typeof(RGBShift))]
+[RequireComponent(typeof(Glitch))]
+[RequireComponent(typeof(GridFlash))]
+[RequireComponent(typeof(VerticalSymmetry))]
+[RequireComponent(typeof(HorizontalSymmetry))]
 [RequireComponent(typeof(Mosaic))]
 [RequireComponent(typeof(Tile))]
 [RequireComponent(typeof(Feedback))]
 [RequireComponent(typeof(SobelEdge))]
-
-
 public class PostEffectApply : MonoBehaviour
 {
-
     #region serialized data 
     [SerializeField] private float effectSpan = 120;
-    [SerializeField] private bool isAutoSwitch = false;
     private Material curMat;
     #endregion
 
     #region private data
-    private List<Material> _materials;
-    Material _throughMaterial;
-    Material _invertColorMaterial;
-    Material _zoomMaterial;
-    Material _rgbShiftMaterial;
-    Material _glitchMaterial;
-    Material _gridFlashMaterial;
-    Material _horizontalSymmetryMaterial;
-    Material _verticalSymmetryMaterial;
-    Material _mosaicMaterial;
-    Material _tileMaterial;
-    Material _feedbackMaterial;
-    Material _edgeMaterial;
-    BasePostEffect _postEffect, _temp;
+    private List<Material> materials;
+    private List<bool> isEffectOn;
+    Material throughMaterial;
+    Material invertColorMaterial;
+    Material zoomMaterial;
+    Material rgbShiftMaterial;
+    Material glitchMaterial;
+    Material gridFlashMaterial;
+    Material horizontalSymmetryMaterial;
+    Material verticalSymmetryMaterial;
+    Material mosaicMaterial;
+    Material tileMaterial;
+    Material feedbackMaterial;
+    Material edgeMaterial;
+    BasePostEffect postEffect, temp;
     #endregion
 
+
+
+    #region effect parameters used only MomentaryHumanMode
+    [SerializeField] [Range(0, 240)] int invertColorTime = 50;
+    [SerializeField] [Range(0, 120)] int zoomTime = 50;
+    [SerializeField] [Range(0, 300)] float zoomPower = 10.0f;
+    [SerializeField] [Range(0, 100)] int rgbshiftTime = 10;
+    [SerializeField] [Range(0.0f, 0.1f)] float offSet = 0.01f;
+    [SerializeField] [Range(0, 240)] int glitchTime = 50;
+    [SerializeField] [Range(0, 240)] int gridFlashTime = 50;
+    [SerializeField] [Range(0, 240)] int horizontalSymmetryTime = 50;
+    [SerializeField] [Range(0, 240)] int verticalSymmetryTime = 50;
+    [SerializeField] [Range(0, 240)] int mosaicTime = 50;
+    [SerializeField] [Range(0, 240)] int mosaicSize = 50;
+    [SerializeField] [Range(0, 240)] int tileTime = 50;
+    [SerializeField] [Range(0, 10)] int tileNum = 5;
+    [SerializeField] [Range(0, 240)] int feedBackTime = 20;
+    [SerializeField] [Range(0, 240)] int edgeTime = 20;
+
+
+    #endregion
 
     #region enum
-    public enum POSTEFFECT_TYPE
+    [SerializeField] private SwitchModes switchMode = SwitchModes.HumanMode;
+    [SerializeField] PosteffecTypes posteffectType = PosteffecTypes.INVERTCOLOR;
+    
+    public SwitchModes SwitchMode
     {
-        TROUGH,
-        INVERTCOLOR,
-        ZOOM,
-        RGBSHIFT,
-        GLITCH,
-        GRIDFLASH,
-        VERTICALSYMMETRY,
-        HORIZONTALSYMMETRY,
-        MOSAIC,
-        TILE,
-        FEEDBACK,
-        EDGE,
+        get { return switchMode; }
+        set { switchMode = value; }
     }
 
-    POSTEFFECT_TYPE _type = POSTEFFECT_TYPE.INVERTCOLOR;
-    #endregion
-
-
-    #region property
-    public POSTEFFECT_TYPE Type
+    public PosteffecTypes PosteffectType
     {
-        get { return _type; }
-        set { _type = value; }
+        get { return posteffectType; }
+        set { posteffectType = value; }
     }
-
     #endregion
 
     private void Awake()
@@ -86,56 +116,132 @@ public class PostEffectApply : MonoBehaviour
     void Update()
     {
         //Automatically
-        if (isAutoSwitch)
+        if (SwitchMode == SwitchModes.AutoMode)
         {
             if (Time.frameCount % effectSpan == 0)
             {
-                curMat = _materials[Random.RandomRange(0, _materials.Count)];
+                curMat = materials[Random.Range(0, materials.Count)];
             }
         }
         //human
-        else
+        else if(SwitchMode == SwitchModes.HumanMode)
         {
             inputs();
-            switch (_type)
+            switch (PosteffectType)
             {
-                case POSTEFFECT_TYPE.TROUGH:
-                    curMat = _throughMaterial;
+                case PosteffecTypes.TROUGH:
+                    curMat = throughMaterial;
                     break;
-                case POSTEFFECT_TYPE.INVERTCOLOR:
-                    curMat = _invertColorMaterial;
+                case PosteffecTypes.INVERTCOLOR:
+                    curMat = invertColorMaterial;
                     break;
-                case POSTEFFECT_TYPE.ZOOM:
-                    curMat = _zoomMaterial;
+                case PosteffecTypes.ZOOM:
+                    curMat = zoomMaterial;
                     break;
-                case POSTEFFECT_TYPE.RGBSHIFT:
-                    curMat = _rgbShiftMaterial;
+                case PosteffecTypes.RGBSHIFT:
+                    curMat = rgbShiftMaterial;
                     break;
-                case POSTEFFECT_TYPE.GLITCH:
-                    curMat = _glitchMaterial;
+                case PosteffecTypes.GLITCH:
+                    curMat = glitchMaterial;
                     break;
-                case POSTEFFECT_TYPE.GRIDFLASH:
-                    curMat = _gridFlashMaterial;
+                case PosteffecTypes.GRIDFLASH:
+                    curMat = gridFlashMaterial;
                     break;
-                case POSTEFFECT_TYPE.VERTICALSYMMETRY:
-                    curMat = _verticalSymmetryMaterial;
+                case PosteffecTypes.VERTICALSYMMETRY:
+                    curMat = verticalSymmetryMaterial;
                     break;
-                case POSTEFFECT_TYPE.HORIZONTALSYMMETRY:
-                    curMat = _horizontalSymmetryMaterial;
+                case PosteffecTypes.HORIZONTALSYMMETRY:
+                    curMat = horizontalSymmetryMaterial;
                     break;
-                case POSTEFFECT_TYPE.MOSAIC:
-                    curMat = _mosaicMaterial;
+                case PosteffecTypes.MOSAIC:
+                    curMat = mosaicMaterial;
                     break;
-                case POSTEFFECT_TYPE.TILE:
-                    curMat = _tileMaterial;
+                case PosteffecTypes.TILE:
+                    curMat = tileMaterial;
                     break;
-                case POSTEFFECT_TYPE.FEEDBACK:
-                    curMat = _feedbackMaterial;
+                case PosteffecTypes.FEEDBACK:
+                    curMat = feedbackMaterial;
                     break;
-                case POSTEFFECT_TYPE.EDGE:
-                    curMat = _edgeMaterial;
+                case PosteffecTypes.EDGE:
+                    curMat = edgeMaterial;
                     break;
 
+            }
+        }else if(SwitchMode == SwitchModes.MomentaryHumanMode)
+        {
+            inputs();
+            switch(PosteffectType)
+            {
+                case PosteffecTypes.INVERTCOLOR:
+                    if(!isEffectOn[1])
+                    {
+                        StartCoroutine("invertColorCoroutine");
+                    }
+                    break;
+
+                case PosteffecTypes.ZOOM:
+                    if(!isEffectOn[2])
+                    {
+                        StartCoroutine("zoomCoroutine");
+                    }
+                    break;
+               
+                case PosteffecTypes.RGBSHIFT:
+                    if(!isEffectOn[3])
+                    {
+                        StartCoroutine("rgbshiftCoroutine");
+                    }
+                    break;
+
+                case PosteffecTypes.GLITCH:
+                    if(!isEffectOn[4])
+                    {
+                        StartCoroutine("glitchCoroutine");
+                    }
+                    break;
+
+                case PosteffecTypes.GRIDFLASH:
+                    if(!isEffectOn[5])
+                    {
+                        StartCoroutine("gridFlashCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.VERTICALSYMMETRY:
+                    if(!isEffectOn[6])
+                    {
+                        StartCoroutine("verticalSymmetryCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.HORIZONTALSYMMETRY:
+                    if(!isEffectOn[7])
+                    {
+                        StartCoroutine("horizontalSymmetryCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.MOSAIC:
+                    if(!isEffectOn[8])
+                    {
+                        StartCoroutine("mosaicCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.TILE:
+                    if(!isEffectOn[9])
+                    {
+                        StartCoroutine("tileCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.FEEDBACK:
+                    if(!isEffectOn[10])
+                    {
+                        StartCoroutine("feedBackCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.EDGE:
+                    if(!isEffectOn[11])
+                    {
+                        StartCoroutine("edgeCoroutine");
+                    }
+                    break;
             }
         }
        
@@ -148,40 +254,39 @@ public class PostEffectApply : MonoBehaviour
 
     void init()
     {
-        _throughMaterial = GetComponent<Through>().material;
-        _invertColorMaterial = GetComponent<InvertColor>().material;
-        _zoomMaterial = GetComponent<Zoom>().material;
-        _rgbShiftMaterial = GetComponent<RGBShift>().material;
-        _glitchMaterial = GetComponent<Glitch>().material;
-        _gridFlashMaterial = GetComponent<GridFlash>().material;
-        _horizontalSymmetryMaterial = GetComponent<HorizontalSymmetry>().material;
-        _verticalSymmetryMaterial = GetComponent<VerticalSymmetry>().material;
-        _mosaicMaterial = GetComponent<Mosaic>().material;
-        _tileMaterial = GetComponent<Tile>().material;
-        _feedbackMaterial = GetComponent<Feedback>().material;
-        _edgeMaterial = GetComponent<SobelEdge>().material;
+        throughMaterial = GetComponent<Through>().material;
+        invertColorMaterial = GetComponent<InvertColor>().material;
+        zoomMaterial = GetComponent<Zoom>().material;
+        rgbShiftMaterial = GetComponent<RGBShift>().material;
+        glitchMaterial = GetComponent<Glitch>().material;
+        gridFlashMaterial = GetComponent<GridFlash>().material;
+        horizontalSymmetryMaterial = GetComponent<HorizontalSymmetry>().material;
+        verticalSymmetryMaterial = GetComponent<VerticalSymmetry>().material;
+        mosaicMaterial = GetComponent<Mosaic>().material;
+        tileMaterial = GetComponent<Tile>().material;
+        feedbackMaterial = GetComponent<Feedback>().material;
+        edgeMaterial = GetComponent<SobelEdge>().material;
       
 
 
-        _materials = new List<Material>();
-        _materials.Add(_throughMaterial);
-        _materials.Add(_invertColorMaterial);
-        _materials.Add(_zoomMaterial);
-        _materials.Add(_rgbShiftMaterial);
-        _materials.Add(_glitchMaterial);
-        _materials.Add(_gridFlashMaterial);
-        _materials.Add(_horizontalSymmetryMaterial);
-        _materials.Add(_verticalSymmetryMaterial);
-        _materials.Add(_mosaicMaterial);
-        _materials.Add(_tileMaterial);
-        _materials.Add(_feedbackMaterial);
-        _materials.Add(_edgeMaterial);
-       
+        materials = new List<Material>();
+        materials.Add(throughMaterial);
+        materials.Add(invertColorMaterial);
+        materials.Add(zoomMaterial);
+        materials.Add(rgbShiftMaterial);
+        materials.Add(glitchMaterial);
+        materials.Add(gridFlashMaterial);
+        materials.Add(horizontalSymmetryMaterial);
+        materials.Add(verticalSymmetryMaterial);
+        materials.Add(mosaicMaterial);
+        materials.Add(tileMaterial);
+        materials.Add(feedbackMaterial);
+        materials.Add(edgeMaterial);
 
-        if(curMat == null)
-        {
-            curMat = _edgeMaterial;
-        }
+        isEffectOn = Enumerable.Repeat(false, materials.Count).ToList();
+
+        curMat = throughMaterial;
+        PosteffectType = PosteffecTypes.TROUGH;
     }
 
 
@@ -190,86 +295,296 @@ public class PostEffectApply : MonoBehaviour
        
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            _type = POSTEFFECT_TYPE.TROUGH;
-            _postEffect = this.GetComponent<Through>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.TROUGH;
+            postEffect = this.GetComponent<Through>();
+            postEffect.IsActive = true;
         }
         else if (Input.GetKeyDown(KeyCode.F2))
         {
-            _type = POSTEFFECT_TYPE.INVERTCOLOR;
-            _postEffect = this.GetComponent<InvertColor>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.INVERTCOLOR;
+            postEffect = this.GetComponent<InvertColor>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[1] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F3))
         {
-            _type = POSTEFFECT_TYPE.ZOOM;
-            _postEffect = this.GetComponent<Zoom>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.ZOOM;
+            postEffect = this.GetComponent<Zoom>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[2] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F4))
         {
-            _type = POSTEFFECT_TYPE.RGBSHIFT;
-            _postEffect = this.GetComponent<RGBShift>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.RGBSHIFT;
+            postEffect = this.GetComponent<RGBShift>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[3] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F5))
         {
-            _type = POSTEFFECT_TYPE.GLITCH;
-            _postEffect.GetComponent<Glitch>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.GLITCH;
+            postEffect.GetComponent<Glitch>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[4] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F6))
         {
-            _type = POSTEFFECT_TYPE.GRIDFLASH;
-            _postEffect = this.GetComponent<GridFlash>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.GRIDFLASH;
+            postEffect = this.GetComponent<GridFlash>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[5] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F7))
         {
-            _type = POSTEFFECT_TYPE.VERTICALSYMMETRY;
-            _postEffect = this.GetComponent<VerticalSymmetry>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.VERTICALSYMMETRY;
+            postEffect = this.GetComponent<VerticalSymmetry>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[6] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F8))
         {
-            _type = POSTEFFECT_TYPE.HORIZONTALSYMMETRY;
-            _postEffect = this.GetComponent<HorizontalSymmetry>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.HORIZONTALSYMMETRY;
+            postEffect = this.GetComponent<HorizontalSymmetry>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[7] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F9))
         {
-            _type = POSTEFFECT_TYPE.MOSAIC;
-            _postEffect = this.GetComponent<Mosaic>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.MOSAIC;
+            postEffect = this.GetComponent<Mosaic>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[8] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F10))
         {
-            _type = POSTEFFECT_TYPE.TILE;
-            _postEffect = this.GetComponent<Tile>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.TILE;
+            postEffect = this.GetComponent<Tile>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[9] = false;
+            }
         }
         else if (Input.GetKeyDown(KeyCode.F11))
         {
-            _type = POSTEFFECT_TYPE.FEEDBACK;
-            _postEffect = this.GetComponent<Feedback>();
-            _postEffect.IsActive = true;
+            posteffectType = PosteffecTypes.FEEDBACK;
+            postEffect = this.GetComponent<Feedback>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[10] = false;
+            }
+
         }
         else if (Input.GetKeyDown(KeyCode.F12))
         {
-            _type = POSTEFFECT_TYPE.EDGE;
-            _postEffect = this.GetComponent<SobelEdge>();
-            _postEffect.IsActive = true;    
-        }
+            posteffectType = PosteffecTypes.EDGE;
+            postEffect = this.GetComponent<SobelEdge>();
+            postEffect.IsActive = true;
 
-        
-        if(_temp != _postEffect)
-        {
-            if (_temp != null)
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
             {
-                _temp.IsActive = false;
+                isEffectOn[11] = false;
             }
         }
 
-        _temp = _postEffect;
+        if(SwitchMode == SwitchModes.HumanMode)
+        {
+            if(temp != postEffect)
+            {
+                if(temp != null)
+                {
+                    temp.IsActive = false;
+                }
+            }
+
+            temp = postEffect;
+        }
     }
+
+
+    #region Coroutines
+    private IEnumerator invertColorCoroutine()
+    {
+        isEffectOn[1] = true;
+        curMat = invertColorMaterial;
+        for(int i = 0; i <  invertColorTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator zoomCoroutine()
+    {
+        isEffectOn[2] = true;
+        curMat = zoomMaterial;
+        for(int i = zoomTime; i > 0; i--)
+        {
+            curMat.SetFloat("_Strength", i* zoomPower);
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator rgbshiftCoroutine() {
+        isEffectOn[3] = true;
+        curMat = rgbShiftMaterial;
+        for(int i = rgbshiftTime; i > 0; i--)
+        {
+
+            curMat.SetFloat("_offSet1", Random.Range(-offSet, offSet));
+            curMat.SetFloat("_offSet2", Random.Range(-offSet, offSet));
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator glitchCoroutine()
+    {
+        isEffectOn[4] = true;
+        curMat = glitchMaterial;
+        for(int i = glitchTime; i > 0; i--)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator gridFlashCoroutine()
+    {
+        isEffectOn[5] = true;
+        curMat = gridFlashMaterial ;
+        for(int i = gridFlashTime; i > 0; i--)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator verticalSymmetryCoroutine()
+    {
+        isEffectOn[6] = true;
+        curMat = verticalSymmetryMaterial;
+        for(int i = verticalSymmetryTime; i > 0; i--)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator horizontalSymmetryCoroutine()
+    {
+        isEffectOn[7] = true;
+        curMat = horizontalSymmetryMaterial;
+        for(int i = horizontalSymmetryTime; i > 0; i--)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator mosaicCoroutine()
+    {
+        isEffectOn[8] = true;
+        curMat = mosaicMaterial;
+        for(int i = 0; i < mosaicTime; i++)
+        {
+            curMat.SetFloat("_blockSize", i * mosaicSize);
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+   
+    private IEnumerator tileCoroutine()
+    {
+        isEffectOn[9] = true;
+        curMat = tileMaterial;
+        curMat.SetInt("_tileNum", (Random.Range(1, tileNum)));
+        for(int i = 0; i < tileTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator feedBackCoroutine()
+    {
+        isEffectOn[10] = true;
+        curMat = feedbackMaterial;
+        for(int i = 0; i < feedBackTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator edgeCoroutine()
+    {
+        isEffectOn[11] = true;
+        curMat = edgeMaterial;
+        for(int i = 0; i < edgeTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    #endregion
 }

@@ -24,6 +24,11 @@ This is PostEffect package(HLSL).
 - FeedBack
 - SobelEdge
 ## Usage
+0. Please see ExampleScene!
 
-1. PostEffectApply.cs attach MainCamera
-2. Make IsEffectSwitch(PostEffectApply's property) true to change effect automatically
+1. PostEffectApply.cs attach camera
+
+2. - Select SwitchMode(in PostEffectApply).
+  - HumanMode : A player can select effect myselef.
+  - AutoMode : Effects are randomly selected every PostEffectApply.EffectSpan(in inspector).
+  - Momentary-HumanMode is a player can select effect myselef, and effect returns default after the lapse of the effect time. You can material some EffectTime and other parameters in inspector.
