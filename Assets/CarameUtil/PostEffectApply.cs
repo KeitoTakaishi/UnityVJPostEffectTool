@@ -26,6 +26,9 @@ public enum PosteffecTypes
     TILE,
     FEEDBACK,
     EDGE,
+    DISTORTION,
+    PIXLESORTING,
+    PINGPONGFLASH
 }
 
 [RequireComponent(typeof(InvertColor))]
@@ -39,6 +42,11 @@ public enum PosteffecTypes
 [RequireComponent(typeof(Tile))]
 [RequireComponent(typeof(Feedback))]
 [RequireComponent(typeof(SobelEdge))]
+[RequireComponent(typeof(Distortion))]
+[RequireComponent(typeof(PixleSorting))]
+[RequireComponent(typeof(PingPongFlash))]
+
+
 public class PostEffectApply : MonoBehaviour
 {
     #region serialized data 
@@ -61,6 +69,9 @@ public class PostEffectApply : MonoBehaviour
     Material tileMaterial;
     Material feedbackMaterial;
     Material edgeMaterial;
+    Material distortionMaterial;
+    Material pixleSortingMaterial;
+    Material pingpongFlashMaterial;
     BasePostEffect postEffect, temp;
     #endregion
 
@@ -80,9 +91,12 @@ public class PostEffectApply : MonoBehaviour
     [SerializeField] [Range(0, 240)] int mosaicSize = 50;
     [SerializeField] [Range(0, 240)] int tileTime = 50;
     [SerializeField] [Range(0, 10)] int tileNum = 5;
-    [SerializeField] [Range(0, 240)] int feedBackTime = 20;
-    [SerializeField] [Range(0, 240)] int edgeTime = 20;
-
+    [SerializeField] [Range(0, 600)] int feedBackTime = 20;
+    [SerializeField] [Range(0, 600)] int edgeTime = 20;
+    [SerializeField] [Range(0, 240)] int distortionTime = 20;
+    [SerializeField] [Range(0,2.0f)] float distortionPower = 1.0f;
+    [SerializeField] [Range(0, 240)] int pixleSortingTime = 20;
+    [SerializeField] [Range(0, 240)] int pingPongTime = 20;
 
     #endregion
 
@@ -165,6 +179,15 @@ public class PostEffectApply : MonoBehaviour
                 case PosteffecTypes.EDGE:
                     curMat = edgeMaterial;
                     break;
+                case PosteffecTypes.DISTORTION:
+                    curMat = distortionMaterial;
+                    break;
+                case PosteffecTypes.PIXLESORTING:
+                    curMat = pixleSortingMaterial;
+                    break;
+                case PosteffecTypes.PINGPONGFLASH:
+                    curMat = pingpongFlashMaterial;
+                    break;
 
             }
         }else if(SwitchMode == SwitchModes.MomentaryHumanMode)
@@ -242,6 +265,24 @@ public class PostEffectApply : MonoBehaviour
                         StartCoroutine("edgeCoroutine");
                     }
                     break;
+                case PosteffecTypes.DISTORTION:
+                    if(!isEffectOn[12])
+                    {
+                        StartCoroutine("distortionCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.PIXLESORTING:
+                    if(!isEffectOn[13])
+                    {
+                        StartCoroutine("pixleSortingCoroutine");
+                    }
+                    break;
+                case PosteffecTypes.PINGPONGFLASH:
+                    if(!isEffectOn[14])
+                    {
+                        StartCoroutine("pingPongFlashCoroutine");
+                    }
+                    break;
             }
         }
        
@@ -266,7 +307,11 @@ public class PostEffectApply : MonoBehaviour
         tileMaterial = GetComponent<Tile>().material;
         feedbackMaterial = GetComponent<Feedback>().material;
         edgeMaterial = GetComponent<SobelEdge>().material;
-      
+        distortionMaterial = GetComponent<Distortion>().material;
+        pixleSortingMaterial = GetComponent<PixleSorting>().material;
+        pingpongFlashMaterial = GetComponent<PingPongFlash>().material;
+
+
 
 
         materials = new List<Material>();
@@ -282,6 +327,9 @@ public class PostEffectApply : MonoBehaviour
         materials.Add(tileMaterial);
         materials.Add(feedbackMaterial);
         materials.Add(edgeMaterial);
+        materials.Add(distortionMaterial);
+        materials.Add(pixleSortingMaterial);
+        materials.Add(pingpongFlashMaterial);
 
         isEffectOn = Enumerable.Repeat(false, materials.Count).ToList();
 
@@ -420,9 +468,43 @@ public class PostEffectApply : MonoBehaviour
             {
                 isEffectOn[11] = false;
             }
-        }
+        } 
+        
+        else if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            posteffectType = PosteffecTypes.DISTORTION;
+            postEffect = this.GetComponent<Distortion>();
+            postEffect.IsActive = true;
 
-        if(SwitchMode == SwitchModes.HumanMode)
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[12] = false;
+            }
+        } 
+        
+        else if(Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            posteffectType = PosteffecTypes.PIXLESORTING;
+            postEffect = this.GetComponent<PixleSorting>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[13] = false;
+            }
+        } 
+        
+        else if(Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            posteffectType = PosteffecTypes.PINGPONGFLASH;
+            postEffect = this.GetComponent<PingPongFlash>();
+            postEffect.IsActive = true;
+
+            if(SwitchMode == SwitchModes.MomentaryHumanMode)
+            {
+                isEffectOn[14] = false;
+            }
+        } else if(SwitchMode == SwitchModes.HumanMode)
         {
             if(temp != postEffect)
             {
@@ -585,6 +667,50 @@ public class PostEffectApply : MonoBehaviour
         posteffectType = PosteffecTypes.TROUGH;
         yield break;
     }
+
+    private IEnumerator distortionCoroutine()
+    {
+        isEffectOn[12] = true;
+        curMat = distortionMaterial;
+        distortionPower = Random.Range(0.5f, distortionPower);
+        curMat.SetFloat("_pivotX", Random.Range(0.0f, 1.0f));
+        curMat.SetFloat("_pivotX", Random.Range(0.0f, 1.0f));
+        for(int i = 0; i < distortionTime; i++)
+        {
+            curMat.SetFloat("_power", Mathf.Clamp(i*0.2f, 0.0f, distortionPower));
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator pixleSortingCoroutine()
+    {
+        isEffectOn[13] = true;
+        curMat = pixleSortingMaterial;
+        for(int i = 0; i < distortionTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
+    private IEnumerator pingPongFlashCoroutine()
+    {
+        isEffectOn[14] = true;
+        curMat = pingpongFlashMaterial;
+        for(int i = 0; i < pingPongTime; i++)
+        {
+            yield return null;
+        }
+        curMat = throughMaterial;
+        posteffectType = PosteffecTypes.TROUGH;
+        yield break;
+    }
+
 
     #endregion
 }

@@ -1,9 +1,9 @@
-﻿Shader "Hidden/Tile"
+﻿Shader "Hidden/PingPongFlash"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-		_tileNum("TileNum", Int) = 3
+		_timeSpeed("TimeSpeed", Float) = 70.0
     }
     SubShader
     {
@@ -39,12 +39,14 @@
             }
 
             sampler2D _MainTex;
-			int _tileNum;
+			float _timeSpeed;
+
             fixed4 frag (v2f i) : SV_Target
             {
-				float2 uv = i.uv;
-				uv = frac(uv*float(_tileNum));
-				fixed4 col = tex2D(_MainTex, uv);
+                fixed4 col = tex2D(_MainTex, i.uv);
+				if (clamp(sin(_Time.y * _timeSpeed), -1.0, 1.0) < 0.0) {
+					col = 1.0 - col;
+				}
                 return col;
             }
             ENDCG
