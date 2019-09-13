@@ -31,6 +31,7 @@ public enum PosteffecTypes
     PINGPONGFLASH
 }
 
+[RequireComponent(typeof(Through))]
 [RequireComponent(typeof(InvertColor))]
 [RequireComponent(typeof(Zoom))]
 [RequireComponent(typeof(RGBShift))]
@@ -689,7 +690,7 @@ public class PostEffectApply : MonoBehaviour
     {
         isEffectOn[13] = true;
         curMat = pixleSortingMaterial;
-        for(int i = 0; i < distortionTime; i++)
+        for(int i = 0; i < pixleSortingTime; i++)
         {
             yield return null;
         }

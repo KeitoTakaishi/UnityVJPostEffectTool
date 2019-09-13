@@ -7,9 +7,14 @@ public class PingPongFlash : BasePostEffect
 {
     const string SHADER_NAME = "Hidden/PingPongFlash";
 
+
+    private void Awake()
+    {
+        shaderName = SHADER_NAME;
+    }
     void Start()
     {
-        shaderName = SHADER_NAME;    
+          
     }
 
     void Update()
