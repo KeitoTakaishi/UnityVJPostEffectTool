@@ -29,6 +29,11 @@
                 float4 vertex : SV_POSITION;
             };
 
+			float2x2 rotate(float a) {
+				float s = sin(a), c = cos(a);
+				return float2x2(c, s, -s, c);
+			}
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -42,10 +47,14 @@
             fixed4 frag (v2f i) : SV_Target
             {
 				float2 uv = i.uv;
-				uv.y = 0.5 - abs(0.5 - i.uv.y);
-                fixed4 col = tex2D(_MainTex, uv);
-               
-                return col;
+
+			   uv = 2.0 * uv - 1.0;
+			   uv.y = abs(uv.y);
+			   float theta = fmod(_Time.y, 180.0);
+			   uv = mul(uv, rotate(-1.0*theta));
+			   uv = (uv + float2(1.0, 1.0)) / 2.0;
+			   fixed4 col = tex2D(_MainTex, uv);
+			   return col;
             }
             ENDCG
         }
